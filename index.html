@@ -5,52 +5,115 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Yahtzee Scorecard</title>
     <style>
-        /* Previous CSS remains the same */
-        .player-name {
-            margin-bottom: 20px;
-            width: 100%;
+        :root {
+            --primary-color: #2c3e50;
+            --border-color: #bdc3c7;
+            --highlight-color: #3498db;
+            --success-color: #2ecc71;
         }
 
-        .player-name input {
-            width: 100%;
-            padding: 8px;
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f6fa;
+            color: var(--primary-color);
+        }
+
+        .scorecard {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .section {
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .score-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 5px 0;
+        }
+
+        .score-label {
+            flex: 2;
+        }
+
+        .score-input {
+            flex: 1;
+            max-width: 80px;
+            padding: 5px;
             border: 1px solid var(--border-color);
             border-radius: 4px;
+            text-align: center;
             font-size: 16px;
         }
 
-        .submit-score {
-            background-color: var(--success-color);
+        .score-display {
+            flex: 1;
+            max-width: 80px;
+            padding: 5px;
+            background-color: #eee;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .subtotal {
+            font-weight: bold;
+            background-color: #f0f0f0;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .new-game {
+            background-color: var(--highlight-color);
             color: white;
         }
 
-        .submit-score:hover {
-            background-color: #27ae60;
+        .new-game:hover {
+            background-color: #2980b9;
         }
 
-        .submit-score:disabled {
-            background-color: #bdc3c7;
-            cursor: not-allowed;
-        }
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
 
-        .message {
-            text-align: center;
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 4px;
-            display: none;
-        }
+            .scorecard {
+                padding: 10px;
+            }
 
-        .message.success {
-            background-color: #d5f5e3;
-            color: #27ae60;
-            display: block;
-        }
-
-        .message.error {
-            background-color: #f5b7b1;
-            color: #c0392b;
-            display: block;
+            .score-input {
+                max-width: 60px;
+            }
         }
     </style>
 </head>
@@ -58,79 +121,188 @@
     <div class="scorecard">
         <h1>Yahtzee Scorecard</h1>
         
-        <div class="player-name">
-            <input type="text" id="player-name" placeholder="Enter your name" required>
+        <!-- Upper Section -->
+        <div class="section">
+            <h2>Upper Section</h2>
+            <div class="score-row">
+                <span class="score-label">Aces (1s)</span>
+                <input type="number" class="score-input" id="ones" min="0" max="5">
+            </div>
+            <div class="score-row">
+                <span class="score-label">Twos</span>
+                <input type="number" class="score-input" id="twos" min="0" max="10">
+            </div>
+            <div class="score-row">
+                <span class="score-label">Threes</span>
+                <input type="number" class="score-input" id="threes" min="0" max="15">
+            </div>
+            <div class="score-row">
+                <span class="score-label">Fours</span>
+                <input type="number" class="score-input" id="fours" min="0" max="20">
+            </div>
+            <div class="score-row">
+                <span class="score-label">Fives</span>
+                <input type="number" class="score-input" id="fives" min="0" max="25">
+            </div>
+            <div class="score-row">
+                <span class="score-label">Sixes</span>
+                <input type="number" class="score-input" id="sixes" min="0" max="30">
+            </div>
+            <div class="score-row subtotal">
+                <span class="score-label">Upper Section Score</span>
+                <span class="score-display" id="upper-score">0</span>
+            </div>
+            <div class="score-row">
+                <span class="score-label">Bonus (63+ = 35)</span>
+                <span class="score-display" id="bonus">0</span>
+            </div>
+            <div class="score-row subtotal">
+                <span class="score-label">Upper Section Total</span>
+                <span class="score-display" id="upper-total">0</span>
+            </div>
         </div>
 
-        <div id="message" class="message"></div>
-        
-        <!-- Previous HTML structure remains the same -->
+        <!-- Lower Section -->
+        <div class="section">
+            <h2>Lower Section</h2>
+            <div class="score-row">
+                <span class="score-label">3 of a Kind</span>
+                <input type="number" class="score-input" id="three-kind" min="0" max="30">
+            </div>
+            <div class="score-row">
+                <span class="score-label">4 of a Kind</span>
+                <input type="number" class="score-input" id="four-kind" min="0" max="30">
+            </div>
+            <div class="score-row">
+                <span class="score-label">Full House</span>
+                <input type="number" class="score-input" id="full-house" min="0" max="25" step="25">
+            </div>
+            <div class="score-row">
+                <span class="score-label">Small Straight</span>
+                <input type="number" class="score-input" id="small-straight" min="0" max="30" step="30">
+            </div>
+            <div class="score-row">
+                <span class="score-label">Large Straight</span>
+                <input type="number" class="score-input" id="large-straight" min="0" max="40" step="40">
+            </div>
+            <div class="score-row">
+                <span class="score-label">Yahtzee</span>
+                <input type="number" class="score-input" id="yahtzee" min="0" max="50" step="50">
+            </div>
+            <div class="score-row">
+                <span class="score-label">Chance</span>
+                <input type="number" class="score-input" id="chance" min="0" max="30">
+            </div>
+            <div class="score-row subtotal">
+                <span class="score-label">Lower Section Total</span>
+                <span class="score-display" id="lower-total">0</span>
+            </div>
+        </div>
+
+        <!-- Grand Total -->
+        <div class="score-row subtotal">
+            <span class="score-label">Grand Total</span>
+            <span class="score-display" id="grand-total">0</span>
+        </div>
 
         <div class="buttons">
             <button class="new-game" onclick="newGame()">New Game</button>
-            <button class="submit-score" onclick="submitScore()" id="submit-button">Submit Score</button>
         </div>
     </div>
 
     <script>
-        // Previous JavaScript remains the same, add these new functions:
+        // Initialize scores object
+        let scores = {
+            ones: 0, twos: 0, threes: 0, fours: 0, fives: 0, sixes: 0,
+            'three-kind': 0, 'four-kind': 0, 'full-house': 0,
+            'small-straight': 0, 'large-straight': 0, yahtzee: 0, chance: 0
+        };
 
-        async function submitScore() {
-            const playerName = document.getElementById('player-name').value.trim();
-            if (!playerName) {
-                showMessage('Please enter your name before submitting.', 'error');
-                return;
-            }
-
-            // Get all the calculated totals
-            const upperScore = parseInt(document.getElementById('upper-score').textContent);
-            const bonus = parseInt(document.getElementById('bonus').textContent);
-            const upperTotal = parseInt(document.getElementById('upper-total').textContent);
-            const lowerTotal = parseInt(document.getElementById('lower-total').textContent);
-            const grandTotal = parseInt(document.getElementById('grand-total').textContent);
-
-            const submitButton = document.getElementById('submit-button');
-            submitButton.disabled = true;
-
-            try {
-                // Replace 'YOUR_GOOGLE_APPS_SCRIPT_URL' with your actual web app URL
-                const response = await fetch('YOUR_GOOGLE_APPS_SCRIPT_URL', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        playerName,
-                        scores,
-                        upperScore,
-                        bonus,
-                        upperTotal,
-                        lowerTotal,
-                        grandTotal
-                    })
+        // Load saved game state
+        function loadGame() {
+            const savedScores = localStorage.getItem('yahtzeeScores');
+            if (savedScores) {
+                scores = JSON.parse(savedScores);
+                Object.keys(scores).forEach(key => {
+                    const input = document.getElementById(key);
+                    if (input && scores[key]) {
+                        input.value = scores[key];
+                    }
                 });
-
-                const result = await response.json();
-                if (result.status === 'success') {
-                    showMessage('Score submitted successfully!', 'success');
-                    setTimeout(newGame, 2000);
-                } else {
-                    throw new Error('Submission failed');
-                }
-            } catch (error) {
-                showMessage('Error submitting score. Please try again.', 'error');
-                submitButton.disabled = false;
+                calculateTotals();
             }
         }
 
-        function showMessage(text, type) {
-            const messageDiv = document.getElementById('message');
-            messageDiv.textContent = text;
-            messageDiv.className = `message ${type}`;
-            setTimeout(() => {
-                messageDiv.className = 'message';
-            }, 5000);
+        // Save game state
+        function saveGame() {
+            localStorage.setItem('yahtzeeScores', JSON.stringify(scores));
         }
+
+        // Reset game
+        function newGame() {
+            if (confirm('Start a new game? This will clear all scores.')) {
+                scores = Object.fromEntries(Object.keys(scores).map(key => [key, 0]));
+                document.querySelectorAll('.score-input').forEach(input => {
+                    input.value = '';
+                });
+                calculateTotals();
+                saveGame();
+            }
+        }
+
+        // Calculate all totals
+        function calculateTotals() {
+            // Upper section
+            const upperScores = ['ones', 'twos', 'threes', 'fours', 'fives', 'sixes'];
+            const upperTotal = upperScores.reduce((sum, key) => sum + (scores[key] || 0), 0);
+            document.getElementById('upper-score').textContent = upperTotal;
+
+            // Bonus
+            const bonus = upperTotal >= 63 ? 35 : 0;
+            document.getElementById('bonus').textContent = bonus;
+            document.getElementById('upper-total').textContent = upperTotal + bonus;
+
+            // Lower section
+            const lowerScores = ['three-kind', 'four-kind', 'full-house', 
+                               'small-straight', 'large-straight', 'yahtzee', 'chance'];
+            const lowerTotal = lowerScores.reduce((sum, key) => sum + (scores[key] || 0), 0);
+            document.getElementById('lower-total').textContent = lowerTotal;
+
+            // Grand total
+            document.getElementById('grand-total').textContent = upperTotal + bonus + lowerTotal;
+        }
+
+        // Validate and update scores
+        function validateScore(input, maxScore, step = 1) {
+            let value = parseInt(input.value) || 0;
+            
+            // Ensure the value is a multiple of the step (for fixed-score categories)
+            if (step > 1 && value !== 0) {
+                value = Math.round(value / step) * step;
+            }
+            
+            // Ensure the value is within valid range
+            value = Math.max(0, Math.min(value, maxScore));
+            
+            // Update input and scores object
+            input.value = value || '';
+            scores[input.id] = value;
+            
+            calculateTotals();
+            saveGame();
+        }
+
+        // Add event listeners to all score inputs
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputs = document.querySelectorAll('.score-input');
+            inputs.forEach(input => {
+                const maxScore = parseInt(input.max);
+                const step = parseInt(input.step) || 1;
+                input.addEventListener('change', () => validateScore(input, maxScore, step));
+                input.addEventListener('input', () => validateScore(input, maxScore, step));
+            });
+            loadGame();
+        });
     </script>
 </body>
 </html>
