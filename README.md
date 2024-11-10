@@ -1,2 +1,3 @@
-# yahtzee
-yahtzee app
+# yahtzee app
+
+https://rileycodescodes.github.io/yahtzee/
